@@ -1,0 +1,22 @@
+{
+  "name": "nodejs-hw-mongodb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Veronika Dyka <dikaya.nika15@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "pino-pretty": "^11.2.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "pino-http": "^10.3.0"
+  }
+}
