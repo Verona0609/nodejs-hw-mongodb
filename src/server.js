@@ -5,7 +5,8 @@ import pino from "pino-http";
 import cors from "cors";
 import dotenv from "dotenv";
 import { env } from "./utils/env.js";
-import { getContact, getContacts } from "./controllers/contactsController.js";
+
+import { getAllContacts, getContactById } from "./services/contact.js";
 
 dotenv.config();
 const PORT = env("PORT", 5000);
@@ -30,10 +31,43 @@ export const setupServer = () => {
     });
   });
   //5 Реєстрація роута для отримання всіх контактів
-  app.get("/contacts", getContacts);
-  
+  app.get("/contacts", async (req, res) => {
+    try {
+      const contacts = await getAllContacts();
+      res.status(200).json({
+        status: 200,
+        message: "Successfully found contacts!",
+        data: contacts,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
   //6 Реєстрація роута для отримання контакту за ID
-  app.get("/contacts/:contactId", getContact);
+  app.get("/contacts/:contactId", async (req, res, next) => {
+    try {
+      const { contactId } = req.params;
+
+      const contact = await getContactById(contactId);
+      if (!contact) {
+        res.status(404).json({
+          message: "Contact not  found ",
+        });
+        return;
+      }
+      res.status(200).json({
+        status: 200,
+        message: `Successfully found contact with id ${contactId}!`,
+        data: contact,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "Server error",
+      });
+    }
+  });
 
   //4
   app.use("*", (req, res, next) => {

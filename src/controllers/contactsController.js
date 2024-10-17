@@ -1,6 +1,6 @@
-import { getAllContacts, getContactById } from "../services/contact.js";
+/* import { getAllContacts, getContactById } from "../services/contact.js"; */
 
-export const getContacts = async (req, res) => {
+/* export const getContacts = async (req, res) => {
   try {
     const contacts = await getAllContacts();
     res.status(200).json({
@@ -13,9 +13,9 @@ export const getContacts = async (req, res) => {
       message: "Failed to retrieve contacts.",
     });
   }
-};
+}; */
 
-export const getContact = async (req, res) => {
+/* export const getContact = async (req, res) => {
   const { contactId } = req.params;
   try {
     const contact = await getContactById(contactId);
@@ -28,4 +28,4 @@ export const getContact = async (req, res) => {
       message: "Contact not found",
     });
   }
-};
+}; */
