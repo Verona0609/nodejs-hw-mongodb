@@ -1,4 +1,4 @@
-//* 3 */
+//* Підкулючення до datebase */
 import { env } from "../utils/env.js";
 import mongoose from "mongoose";
 export const initMongoConnection = async () => {
@@ -11,8 +11,8 @@ export const initMongoConnection = async () => {
     await mongoose.connect(
       `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`
     );
-    console.log("Mongo connection successfully established!");
+    console.log("Database connection successfully established!");
   } catch (error) {
-    console.error("Error while setting up mongo connection", error);
+    console.error("Error while setting up database connection", error);
   }
 };
