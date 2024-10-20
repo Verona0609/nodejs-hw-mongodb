@@ -5,8 +5,7 @@ import {
   deleteContact,
   getAllContacts,
   getContactById,
-} from "../controllers/getContact.js";
-import { get } from "mongoose";
+} from "../services/getContact.js";
 
 export async function getContactsController(req, res, next) {
   const contacts = await getAllContacts();
@@ -17,12 +16,12 @@ export async function getContactsController(req, res, next) {
   });
 }
 
-export async function getContactController(req, res, next) {
+export async function getContactController(req, res) {
   const { contactId } = req.params;
 
   const contact = await getContactById(contactId);
   if (!contact) {
-    return next(new createHttpError.NotFound("Contact not found"));
+    throw createHttpError(404, "Contact not found");
   }
   res.status(200).json({
     status: 200,
