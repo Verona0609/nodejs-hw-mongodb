@@ -26,7 +26,7 @@ const contactSchema = new mongoose.Schema(
     },
   },
   //add createdA and updatedAt
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 //2. Модель
