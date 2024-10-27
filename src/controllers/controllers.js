@@ -6,9 +6,24 @@ import {
   getAllContacts,
   getContactById,
 } from "../services/getContact.js";
+import { parsePaginationParams } from "../utils/parsePaginationParams.js";
+import { parseSortParams } from "../utils/parseSortParamas.js";
+import { parseFilterParams } from "../utils/parseFilterParams.js";
 
 export async function getContactsController(req, res, next) {
-  const contacts = await getAllContacts();
+  const { page, perPage } = parsePaginationParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
+
+  console.log("Filter:", filter);
+
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
   res.status(200).json({
     status: 200,
     message: "Successfully found contacts!",
@@ -31,6 +46,14 @@ export async function getContactController(req, res) {
 }
 
 export async function createContactController(req, res) {
+  if (
+    typeof req.body.name === "undefined" ||
+    typeof req.body.phoneNumber === "undefined" ||
+    typeof req.body.email === "undefined"
+  ) {
+    throw createHttpError(400, "Request is not valid");
+  }
+
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
