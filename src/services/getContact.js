@@ -12,7 +12,7 @@ export const getAllContacts = async ({
   const contactQuery = Contact.find();
 
   console.log("Contact Query Filter:", filter);
-  if (typeof filter.type !== "undefined") {
+  if (filter.type) {
     contactQuery.where("contactType").equals(filter.type);
   }
 

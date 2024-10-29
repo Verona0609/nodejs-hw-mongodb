@@ -17,10 +17,9 @@ export function parseFilterParams(query) {
   const { type, isFavourite } = query;
 
   console.log("Type parameter:", type);
-  const parsedType = parseValue(type);
+  const parsedType = typeof type === "string" ? type : undefined;
+
   const parsedIsFavourite = parseValue(isFavourite);
-  console.log("Parsed Type:", parsedType);
-  console.log("Parsed isFavourite:", parsedIsFavourite);
 
   return {
     type: parsedType,

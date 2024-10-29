@@ -49,8 +49,7 @@ export async function createContactController(req, res) {
   if (
     typeof req.body.name === "undefined" ||
     typeof req.body.phoneNumber === "undefined" ||
-    typeof req.body.email === "undefined" ||
-    typeof req.body.isFavourite === "undefined"
+    typeof req.body.email === "undefined"
   ) {
     throw createHttpError(400, "Request is not valid");
   }
