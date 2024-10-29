@@ -46,14 +46,14 @@ export async function getContactController(req, res) {
 }
 
 export async function createContactController(req, res) {
-  if (
+/*   if (
     typeof req.body.name === "undefined" ||
     typeof req.body.phoneNumber === "undefined" ||
     typeof req.body.email === "undefined"
   ) {
     throw createHttpError(400, "Request is not valid");
   }
-
+ */
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,

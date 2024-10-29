@@ -8,6 +8,7 @@ import { env } from "./utils/env.js";
 import contactRouters from "./routers/contacts.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { authRouter } from "./routers/auth.js";
 
 dotenv.config(); // для считання Api з файлу env.|| db/initMongoConnection.js
 
@@ -32,6 +33,7 @@ export const setupServer = () => {
   });
 
   app.use("/contacts", contactRouters);
+  app.use("/auth", authRouter);
 
   // Middleware для невизначенних роутерів
   app.use(notFoundHandler);

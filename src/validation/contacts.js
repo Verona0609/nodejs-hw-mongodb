@@ -18,7 +18,6 @@ export const contactsSchema = Joi.object({
 export const patchSchema = Joi.object({
   name: Joi.string().min(3).max(20).messages({
     "string.base": "Name must be a string",
-    "any.required": "Name of contact is required",
   }),
   phoneNumber: Joi.string(),
   email: Joi.string().min(10).max(40),
