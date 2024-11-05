@@ -9,4 +9,10 @@ const userSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
+//видалення поля password при Реєстрації
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
 export const User = mongoose.model("users", userSchema);

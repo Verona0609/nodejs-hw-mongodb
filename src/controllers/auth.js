@@ -1,4 +1,10 @@
-import { registerUser } from "../services/user.js";
+import { THIRTY_DAYS } from "../constatns/constans.js";
+import {
+  loginUser,
+  logoutUser,
+  refreshUserSession,
+  registerUser,
+} from "../services/user.js";
 
 export async function registerUserController(req, res) {
   const payload = {
@@ -15,3 +21,66 @@ export async function registerUserController(req, res) {
     data: registeredUser,
   });
 }
+export async function loginUserController(req, res) {
+  const payload = {
+    email: req.body.email,
+    password: req.body.password,
+  };
+  const loggedUser = await loginUser(payload);
+
+  res.cookie("refreshToken", loggedUser.refreshToken, {
+    httpOnly: true,
+    expires: loggedUser.refreshTokenValidUntil,
+  });
+
+  res.cookie("sessionId", loggedUser._id, {
+    httpOnly: true,
+    expires: loggedUser.refreshTokenValidUntil,
+  });
+
+  res.status(200).json({
+    status: 200,
+    message: "Successfully logged in an user!",
+    data: { accessToken: loggedUser.accessToken },
+  });
+}
+
+export async function logoutController(req, res) {
+  const { sessionId } = req.cookies;
+  if (sessionId) {
+    await logoutUser(sessionId);
+  }
+  res.clearCookie("sessionId");
+  res.clearCookie("refreshToken");
+
+  res.status(204).send();
+}
+
+const setupSession = (res, session) => {
+  res.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+  });
+  res.cookie("sessionId", session._id, {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+  });
+};
+
+export async function refreshUserController(req, res) {
+  const { sessionId, refreshToken } = req.cookies || req.body;
+
+  const session = await refreshUserSession({ sessionId, refreshToken });
+
+  setupSession(res, session);
+
+  res.status(200).json({
+    status: 200,
+    message: "Successfully refreshed a session!",
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
+}
+
+

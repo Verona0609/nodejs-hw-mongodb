@@ -11,18 +11,21 @@ import { parseSortParams } from "../utils/parseSortParamas.js";
 import { parseFilterParams } from "../utils/parseFilterParams.js";
 
 export async function getContactsController(req, res, next) {
+  console.log({ "Користувач цей": req.user });
+
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
 
   console.log("Filter:", filter);
-
+  console.log("User ID:", req.user.id);
   const contacts = await getAllContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
     filter,
+    userId: req.user.id,
   });
   res.status(200).json({
     status: 200,
@@ -38,6 +41,10 @@ export async function getContactController(req, res) {
   if (!contact) {
     throw createHttpError(404, "Contact not found");
   }
+
+  if (contact.userId.toString() !== req.user._id.toString()) {
+    throw createHttpError.Forbidden("Contact is forbidden!");
+  }
   res.status(200).json({
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
@@ -46,18 +53,11 @@ export async function getContactController(req, res) {
 }
 
 export async function createContactController(req, res) {
-/*   if (
-    typeof req.body.name === "undefined" ||
-    typeof req.body.phoneNumber === "undefined" ||
-    typeof req.body.email === "undefined"
-  ) {
-    throw createHttpError(400, "Request is not valid");
-  }
- */
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
+    userId: req.user._id,
   };
 
   const result = await createContact(contact);
@@ -76,6 +76,14 @@ export async function deleteContactController(req, res) {
     throw createHttpError(404, "Contact not found");
   }
 
+  const contact = await getContactById(contactId);
+  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+    throw createHttpError(
+      404,
+      "Contact not found or you are not authorized to delete this contact!"
+    );
+  }
+
   res.status(204).end();
 }
 
@@ -86,6 +94,14 @@ export async function changeContactController(req, res) {
   const result = await getContactById(contactId);
   if (result === null) {
     throw createHttpError(404, "Contact not found");
+  }
+
+  const contact = await getContactById(contactId);
+  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+    throw createHttpError(
+      404,
+      "Contact not found or you are not authorized to delete this contact!"
+    );
   }
 
   const updatedContact = await changeContact(contactId, updateData);
