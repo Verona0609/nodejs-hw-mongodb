@@ -9,6 +9,7 @@ import {
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParamas.js";
 import { parseFilterParams } from "../utils/parseFilterParams.js";
+import mongoose from "mongoose";
 
 export async function getContactsController(req, res, next) {
   console.log({ "Користувач цей": req.user });
@@ -70,13 +71,10 @@ export async function createContactController(req, res) {
 
 export async function deleteContactController(req, res) {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const result = await deleteContact(contactId);
-  if (result === null) {
-    throw createHttpError(404, "Contact not found");
-  }
+  const contact = await deleteContact(contactId, userId);
 
-  const contact = await getContactById(contactId);
   if (!contact || contact.userId.toString() !== req.user._id.toString()) {
     throw createHttpError(
       404,
@@ -89,22 +87,19 @@ export async function deleteContactController(req, res) {
 
 export async function changeContactController(req, res) {
   const { contactId } = req.params;
+  const userId = req.user._id;
   const updateData = req.body;
 
-  const result = await getContactById(contactId);
-  if (result === null) {
-    throw createHttpError(404, "Contact not found");
-  }
-
-  const contact = await getContactById(contactId);
-  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+  const updatedContact = await changeContact(contactId, userId, updateData);
+  if (
+    !updatedContact ||
+    updatedContact.userId.toString() !== req.user._id.toString()
+  ) {
     throw createHttpError(
       404,
       "Contact not found or you are not authorized to delete this contact!"
     );
   }
-
-  const updatedContact = await changeContact(contactId, updateData);
   res.json({
     status: 200,
     message: "Contact changes successfully",
