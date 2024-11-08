@@ -9,7 +9,6 @@ import {
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParamas.js";
 import { parseFilterParams } from "../utils/parseFilterParams.js";
-import mongoose from "mongoose";
 
 export async function getContactsController(req, res, next) {
   console.log({ "Користувач цей": req.user });
