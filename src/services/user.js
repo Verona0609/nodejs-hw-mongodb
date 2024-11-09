@@ -4,6 +4,17 @@ import bcrypt from "bcrypt";
 import { Session } from "../models/session.js";
 import { FIFTEEN_MINUTES, THIRTY_DAYS } from "../constatns/constans.js";
 import { randomBytes } from "crypto";
+import jwt from "jsonwebtoken";
+import { env } from "../utils/env.js";
+import { sendEmail } from "../utils/sendMail.js";
+import fs from "node:fs";
+import path from "node:path";
+import handlebars from "handlebars";
+
+const RESET_PASSWORD_TEMPLATE = fs.readFileSync(
+  path.resolve("src/templates/resetPwd.hbs"),
+  { encoding: "utf-8" }
+);
 
 export async function registerUser(payload) {
   const user = await User.findOne({ email: payload.email });
@@ -82,4 +93,64 @@ export async function refreshUserSession({ sessionId, refreshToken }) {
   });
 
   return newSession;
+}
+
+export async function requestResetToken(email) {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, "User not found!");
+  }
+  console.log("User ID for reset token:", user._id);
+  const resetToken = jwt.sign({ sub: user._id, email }, env("JWT_SECRET"), {
+    expiresIn: "15m",
+  });
+
+  const html = handlebars.compile(RESET_PASSWORD_TEMPLATE);
+
+  try {
+    await sendEmail({
+      from: "dikaya.nika15@gmail.com",
+      to: email,
+      subject: "Reset your body",
+      html: html({ APP_DOMAIN: env("APP_DOMAIN"), resetToken }),
+    });
+  } catch (error) {
+    console.error(error);
+    throw createHttpError(
+      500,
+      "Failed to send the email, please try again later."
+    );
+  }
+}
+
+export async function resetPassword(password, token) {
+  try {
+    const decoded = jwt.verify(token, env("JWT_SECRET"));
+    console.log(decoded);
+
+    const user = await User.findOne({
+      _id: decoded.sub,
+      email: decoded.email,
+    });
+
+    if (!user) {
+      throw createHttpError(404, "User not found!");
+    }
+    const encryptedPwd = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(user._id, { password: encryptedPwd });
+
+    const deletedSession = await Session.deleteMany({ userId: user._id });
+    if (deletedSession) {
+      console.log("Пароль успішно змінено, сесії видалено.");
+    }
+  } catch (error) {
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      throw createHttpError(401, "Token is expired or invalid.");
+    }
+    throw error;
+  }
 }
