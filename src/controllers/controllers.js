@@ -1,4 +1,6 @@
 import createHttpError from "http-errors";
+import fs from "node:fs/promises";
+import path from "node:path";
 import {
   changeContact,
   createContact,
@@ -9,6 +11,8 @@ import {
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParamas.js";
 import { parseFilterParams } from "../utils/parseFilterParams.js";
+import { env } from "../utils/env.js";
+import { uploadToCloudinary } from "../utils/uoloadtoCloudinary.js";
 
 export async function getContactsController(req, res, next) {
   console.log({ "Користувач цей": req.user });
@@ -53,11 +57,30 @@ export async function getContactController(req, res) {
 }
 
 export async function createContactController(req, res) {
+  let photo = null;
+
+  if (typeof req.file !== undefined) {
+    if (env("ENABLE_CLOUDINARY") === "true") {
+      const resultPhoto = await uploadToCloudinary(req.file.path);
+      await fs.unlink(req.file.path);
+
+      photo = resultPhoto.secure_url;
+    } else {
+      //для зміни локації додавання фото
+      await fs.rename(
+        req.file.path,
+        path.resolve("src", "public/photo", req.file.filename)
+      );
+      photo = `http://localhost:5000/photo/${req.file.filename}`;
+    }
+  }
+
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
     userId: req.user._id,
+    photo,
   };
 
   const result = await createContact(contact);
@@ -87,7 +110,25 @@ export async function deleteContactController(req, res) {
 export async function changeContactController(req, res) {
   const { contactId } = req.params;
   const userId = req.user._id;
-  const updateData = req.body;
+  const updateData = { ...req.body };
+
+  let photo = null;
+
+  if (typeof req.file !== undefined) {
+    if (env("ENABLE_CLOUDINARY") === "true") {
+      const resultPhoto = await uploadToCloudinary(req.file.path);
+      await fs.unlink(req.file.path);
+
+      photo = resultPhoto.secure_url;
+    } else {
+      const newPath = path.resolve("src", "public/photo", req.file.filename);
+      //для зміни локації додавання фото
+      await fs.rename(req.file.path, newPath);
+      photo = `http://localhost:5000/photo/${req.file.filename}`;
+    }
+    //додаємо оновлення вже з фото
+    updateData.photo = photo;
+  }
 
   const updatedContact = await changeContact(contactId, userId, updateData);
   if (

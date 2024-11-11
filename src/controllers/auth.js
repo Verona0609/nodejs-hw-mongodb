@@ -1,4 +1,4 @@
-import { THIRTY_DAYS } from "../constatns/constans.js";
+import { THIRTY_DAYS } from "../constants/constans.js";
 import {
   loginUser,
   logoutUser,

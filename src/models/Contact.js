@@ -28,6 +28,10 @@ const contactSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    photo: {
+      type: String,
+      default: null,
+    },
   },
   //add createdA and updatedAt
   { timestamps: true, versionKey: false }

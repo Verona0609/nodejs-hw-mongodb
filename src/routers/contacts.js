@@ -10,6 +10,7 @@ import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 import { isValidId } from "../middlewares/isValidId.js";
 import { validateBody } from "../middlewares/validateBody.js";
 import { contactsSchema, patchSchema } from "../validation/contacts.js";
+import { upload } from "../middlewares/upload.js";
 
 const router = express.Router();
 const jsonParser = express.json();
@@ -23,6 +24,7 @@ router.get("/:contactId", isValidId, ctrlWrapper(getContactController));
 //Створення контакту
 router.post(
   "/",
+  upload.single("photo"),
   jsonParser,
   validateBody(contactsSchema),
   ctrlWrapper(createContactController)
@@ -36,6 +38,7 @@ router.delete("/:contactId", isValidId, ctrlWrapper(deleteContactController));
 //Внесення деяких змін
 router.patch(
   "/:contactId",
+  upload.single("photo"),
   jsonParser,
   validateBody(patchSchema),
   isValidId,

@@ -1,5 +1,8 @@
 /node_modules
-
+src/tmp/*
+!src/tmp/.gitkeep
+src/public/photo/*
+!src/public/photo/.gitkeep
 .env
 
 .vscode

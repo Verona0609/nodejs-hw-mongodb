@@ -2,7 +2,7 @@ import createHttpError from "http-errors";
 import { User } from "../models/user.js";
 import bcrypt from "bcrypt";
 import { Session } from "../models/session.js";
-import { FIFTEEN_MINUTES, THIRTY_DAYS } from "../constatns/constans.js";
+import { FIFTEEN_MINUTES, THIRTY_DAYS } from "../constants/constans.js";
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
 import { env } from "../utils/env.js";
