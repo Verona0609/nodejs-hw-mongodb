@@ -16,13 +16,21 @@ const contactSchema = new mongoose.Schema(
     },
     isFavourite: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     contactType: {
       type: String,
       enum: ["work", "home", "personal"],
       required: true,
       default: "personal",
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    photo: {
+      type: String,
+      default: null,
     },
   },
   //add createdA and updatedAt

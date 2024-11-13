@@ -8,14 +8,20 @@ import { env } from "./utils/env.js";
 import contactRouters from "./routers/contacts.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { router } from "./routers/auth.js";
+import cookieParser from "cookie-parser";
+import { auth } from "./middlewares/authenticate.js";
+import path from "node:path";
 
 dotenv.config(); // для считання Api з файлу env.|| db/initMongoConnection.js
 
 export const setupServer = () => {
   const app = express(); //1
+  app.use("/photo", express.static(path.resolve("src", "public/photo"))); //налаштуванням статичного сервера
 
   /*   app.use(express.json()); */
   app.use(cors()); //2
+  app.use(cookieParser());
 
   app.use(
     pino({
@@ -31,7 +37,8 @@ export const setupServer = () => {
     });
   });
 
-  app.use("/contacts", contactRouters);
+  app.use("/contacts", auth, contactRouters);
+  app.use("/auth", router);
 
   // Middleware для невизначенних роутерів
   app.use(notFoundHandler);
