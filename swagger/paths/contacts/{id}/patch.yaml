@@ -1,0 +1,58 @@
+tags:
+  - Contacts
+summary: Update contact details
+operationId: changeContact
+description: Update details for an existing contact.
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: id
+    required: true
+    description: The unique identifier of the contact.
+    schema:
+      type: string
+      example: '65ca67e7ae7f10c88b598384'
+requestBody:
+  description: Fields to update
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            example: 'Updated Name'
+          phoneNumber:
+            type: string
+            example: '+380970715310'
+          email:
+            type: string
+            example: 'updated.email@gmail.com'
+          isFavorite:
+            type: boolean
+            example: true
+responses:
+  '200':
+    description: 'Update contact'
+    content:
+      applcation/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Contact changes successfully'
+            data:
+              type: object
+              $ref: ../../../components/schemas/contact.yaml
+  '404':
+    $ref: ../../../components/responses/404.yaml
