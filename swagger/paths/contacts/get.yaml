@@ -15,7 +15,7 @@ parameters:
     name: perPage
     schema:
       type: integer
-      example: 10
+      example: 2
   - in: query
     name: sortBy
     schema:
@@ -33,7 +33,7 @@ parameters:
     schema:
       type: string
       enum: ['work', 'home', 'personal']
-      example: 'work'
+      example: 'personal'
 responses:
   '200':
     description: Successfully found contacts!
@@ -72,10 +72,10 @@ responses:
                   example: 2
                 perPage:
                   type: number
-                  example: 4
+                  example: 2
                 totalItems:
                   type: number
-                  example: 8
+                  example: 4
                 totalPages:
                   type: number
                   example: 2

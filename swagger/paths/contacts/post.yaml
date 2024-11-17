@@ -14,8 +14,7 @@ requestBody:
           - name
           - phoneNumber
           - email
-          - userId
-          - photo
+          - contactType
         properties:
           name:
             description: "Contact's name"
@@ -29,7 +28,7 @@ requestBody:
             description: "Contact's email"
             type: string
             example: 'zavodzova@gmail.com'
-          isFavorite:
+          isFavourite:
             description: 'Indicates if the contact is marked as favorite'
             type: boolean
             example: true
@@ -40,14 +39,6 @@ requestBody:
             enum: ['work', 'home', 'personal']
             example: 'work'
             default: 'personal'
-          userId:
-            description: "Contact's userId"
-            type: string
-            example: '672a2f64e582207d37e026e8'
-          photo:
-            description: "Contact's photo URL"
-            type: string
-            format: binary
 responses:
   '201':
     description: Create a contact

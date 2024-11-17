@@ -1,28 +1,28 @@
-import createHttpError from "http-errors";
-import fs from "node:fs/promises";
-import path from "node:path";
+import createHttpError from 'http-errors';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import {
   changeContact,
   createContact,
   deleteContact,
   getAllContacts,
   getContactById,
-} from "../services/getContact.js";
-import { parsePaginationParams } from "../utils/parsePaginationParams.js";
-import { parseSortParams } from "../utils/parseSortParamas.js";
-import { parseFilterParams } from "../utils/parseFilterParams.js";
-import { env } from "../utils/env.js";
-import { uploadToCloudinary } from "../utils/uoloadtoCloudinary.js";
+} from '../services/getContact.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParamas.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { env } from '../utils/env.js';
+import { uploadToCloudinary } from '../utils/uoloadtoCloudinary.js';
 
 export async function getContactsController(req, res, next) {
-  console.log({ "Користувач цей": req.user });
+  console.log({ 'Користувач цей': req.user });
 
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
 
-  console.log("Filter:", filter);
-  console.log("User ID:", req.user.id);
+  console.log('Filter:', filter);
+  console.log('User ID:', req.user.id);
   const contacts = await getAllContacts({
     page,
     perPage,
@@ -33,7 +33,7 @@ export async function getContactsController(req, res, next) {
   });
   res.status(200).json({
     status: 200,
-    message: "Successfully found contacts!",
+    message: 'Successfully found contacts!',
     data: contacts,
   });
 }
@@ -43,11 +43,11 @@ export async function getContactController(req, res) {
 
   const contact = await getContactById(contactId);
   if (!contact) {
-    throw createHttpError(404, "Contact not found");
+    throw createHttpError(404, 'Contact not found');
   }
 
   if (contact.userId.toString() !== req.user._id.toString()) {
-    throw createHttpError.Forbidden("Contact is forbidden!");
+    throw createHttpError.Forbidden('Contact is forbidden!');
   }
   res.status(200).json({
     status: 200,
@@ -59,8 +59,8 @@ export async function getContactController(req, res) {
 export async function createContactController(req, res) {
   let photo = null;
 
-  if (typeof req.file !== undefined) {
-    if (env("ENABLE_CLOUDINARY") === "true") {
+  if (req.file) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
       const resultPhoto = await uploadToCloudinary(req.file.path);
       await fs.unlink(req.file.path);
 
@@ -69,7 +69,7 @@ export async function createContactController(req, res) {
       //для зміни локації додавання фото
       await fs.rename(
         req.file.path,
-        path.resolve("src", "public/photo", req.file.filename)
+        path.resolve('src', 'public/photo', req.file.filename),
       );
       photo = `http://localhost:5000/photo/${req.file.filename}`;
     }
@@ -86,7 +86,7 @@ export async function createContactController(req, res) {
   const result = await createContact(contact);
   res.status(201).json({
     status: 201,
-    message: "Successfully created a contact!",
+    message: 'Successfully created a contact!',
     data: result,
   });
 }
@@ -100,7 +100,7 @@ export async function deleteContactController(req, res) {
   if (!contact || contact.userId.toString() !== req.user._id.toString()) {
     throw createHttpError(
       404,
-      "Contact not found or you are not authorized to delete this contact!"
+      'Contact not found or you are not authorized to delete this contact!',
     );
   }
 
@@ -114,14 +114,14 @@ export async function changeContactController(req, res) {
 
   let photo = null;
 
-  if (typeof req.file !== undefined) {
-    if (env("ENABLE_CLOUDINARY") === "true") {
+  if (req.file) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
       const resultPhoto = await uploadToCloudinary(req.file.path);
       await fs.unlink(req.file.path);
 
       photo = resultPhoto.secure_url;
     } else {
-      const newPath = path.resolve("src", "public/photo", req.file.filename);
+      const newPath = path.resolve('src', 'public/photo', req.file.filename);
       //для зміни локації додавання фото
       await fs.rename(req.file.path, newPath);
       photo = `http://localhost:5000/photo/${req.file.filename}`;
@@ -131,18 +131,15 @@ export async function changeContactController(req, res) {
   }
 
   const updatedContact = await changeContact(contactId, userId, updateData);
-  if (
-    !updatedContact ||
-    updatedContact.userId.toString() !== req.user._id.toString()
-  ) {
+  if (!updatedContact) {
     throw createHttpError(
       404,
-      "Contact not found or you are not authorized to delete this contact!"
+      'Contact not found or you are not authorized to delete this contact!',
     );
   }
   res.json({
     status: 200,
-    message: "Contact changes successfully",
+    message: 'Contact changes successfully',
     data: updatedContact,
   });
 }

@@ -30,9 +30,13 @@ requestBody:
           email:
             type: string
             example: 'updated.email@gmail.com'
-          isFavorite:
+          isFavourite:
             type: boolean
             example: true
+          contactType:
+            type: string
+            enum: ['work', 'home', 'personal']
+            example: 'work'
 responses:
   '200':
     description: 'Update contact'

@@ -152,9 +152,18 @@
                     "type": "string",
                     "example": "updated.email@gmail.com"
                   },
-                  "isFavorite": {
+                  "isFavourite": {
                     "type": "boolean",
                     "example": true
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ],
+                    "example": "work"
                   }
                 }
               }
@@ -223,27 +232,7 @@
         "responses": {
           "204": {
             "description": "Contact deleted successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 204
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Contact deleted"
-                    }
-                  }
-                }
-              }
-            }
+            "content": {}
           },
           "404": {
             "$ref": "#/components/responses/404"
@@ -278,7 +267,7 @@
             "name": "perPage",
             "schema": {
               "type": "integer",
-              "example": 10
+              "example": 2
             }
           },
           {
@@ -312,7 +301,7 @@
                 "home",
                 "personal"
               ],
-              "example": "work"
+              "example": "personal"
             }
           }
         ],
@@ -361,11 +350,11 @@
                         },
                         "perPage": {
                           "type": "number",
-                          "example": 4
+                          "example": 2
                         },
                         "totalItems": {
                           "type": "number",
-                          "example": 8
+                          "example": 4
                         },
                         "totalPages": {
                           "type": "number",
@@ -412,8 +401,7 @@
                   "name",
                   "phoneNumber",
                   "email",
-                  "userId",
-                  "photo"
+                  "contactType"
                 ],
                 "properties": {
                   "name": {
@@ -431,7 +419,7 @@
                     "type": "string",
                     "example": "zavodzova@gmail.com"
                   },
-                  "isFavorite": {
+                  "isFavourite": {
                     "description": "Indicates if the contact is marked as favorite",
                     "type": "boolean",
                     "example": true,
@@ -447,16 +435,6 @@
                     ],
                     "example": "work",
                     "default": "personal"
-                  },
-                  "userId": {
-                    "description": "Contact's userId",
-                    "type": "string",
-                    "example": "672a2f64e582207d37e026e8"
-                  },
-                  "photo": {
-                    "description": "Contact's photo URL",
-                    "type": "string",
-                    "format": "binary"
                   }
                 }
               }
