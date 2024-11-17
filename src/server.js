@@ -12,16 +12,14 @@ import { router } from './routers/auth.js';
 import cookieParser from 'cookie-parser';
 import { auth } from './middlewares/authenticate.js';
 import path from 'node:path';
-import swaggerUi from 'swagger-ui-express';
-import swaggerDocs from '../docs/swagger.json' with {type:"json"}
+
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
+import { UPLOAD_DIR } from './constants/constans.js';
 
 dotenv.config(); // для считання Api з файлу env.|| db/initMongoConnection.js
 
 export const setupServer = () => {
   const app = express();
-
-  app.use('/api-docs', swaggerUi.serve);
-  app.get('/api-docs', swaggerUi.setup(swaggerDocs));
 
   app.use('/photo', express.static(path.resolve('src', 'public/photo'))); //налаштуванням статичного сервера
 
@@ -42,9 +40,12 @@ export const setupServer = () => {
       message: 'Hello, my dear Friend!',
     });
   });
+  app.use('/api-docs', swaggerDocs());
 
   app.use('/contacts', auth, contactRouters);
   app.use('/auth', router);
+
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
   // Middleware для невизначенних роутерів
   app.use(notFoundHandler);
@@ -52,16 +53,9 @@ export const setupServer = () => {
   // Middleware, при винекненні помилки
   app.use(errorHandler);
 
-  async function bootstrap() {
-    try {
-      const PORT = env('PORT', 5000);
-      //Запит на PORT
-      app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  bootstrap();
+  const PORT = env('PORT', 5000);
+  //Запит на PORT
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 };
