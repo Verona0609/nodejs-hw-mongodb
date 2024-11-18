@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000"
+      "url": "https://nodejs-hw-mongodb-7-x19o.onrender.com"
     }
   ],
   "tags": [
@@ -136,7 +136,7 @@
           "description": "Fields to update",
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -164,6 +164,11 @@
                       "personal"
                     ],
                     "example": "work"
+                  },
+                  "photo": {
+                    "description": "Contact's photo",
+                    "type": "string",
+                    "format": "binary"
                   }
                 }
               }
@@ -293,7 +298,7 @@
           },
           {
             "in": "query",
-            "name": "filter",
+            "name": "type",
             "schema": {
               "type": "string",
               "enum": [
@@ -302,6 +307,14 @@
                 "personal"
               ],
               "example": "personal"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isFavourite",
+            "schema": {
+              "type": "boolean",
+              "example": true
             }
           }
         ],
@@ -400,7 +413,6 @@
                 "required": [
                   "name",
                   "phoneNumber",
-                  "email",
                   "contactType"
                 ],
                 "properties": {
@@ -435,6 +447,12 @@
                     ],
                     "example": "work",
                     "default": "personal"
+                  },
+                  "photo": {
+                    "description": "Contact's photo",
+                    "type": "string",
+                    "format": "binary",
+                    "example": "5269434533411941659.jpg"
                   }
                 }
               }

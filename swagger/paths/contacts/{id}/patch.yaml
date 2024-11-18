@@ -17,7 +17,7 @@ requestBody:
   description: Fields to update
   required: true
   content:
-    application/json:
+    multipart/form-data:
       schema:
         type: object
         properties:
@@ -37,6 +37,10 @@ requestBody:
             type: string
             enum: ['work', 'home', 'personal']
             example: 'work'
+          photo:
+            description: "Contact's photo"
+            type: string
+            format: binary
 responses:
   '200':
     description: 'Update contact'
