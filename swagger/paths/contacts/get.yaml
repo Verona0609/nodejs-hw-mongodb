@@ -77,13 +77,13 @@ responses:
                   example: 2
                 perPage:
                   type: number
-                  example: 2
+                  example: 3
                 totalItems:
                   type: number
-                  example: 4
+                  example: 3
                 totalPages:
                   type: number
-                  example: 2
+                  example: 1
                 hasNextPage:
                   type: boolean
                   example: false
