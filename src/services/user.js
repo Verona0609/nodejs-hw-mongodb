@@ -10,6 +10,7 @@ import { sendEmail } from "../utils/sendMail.js";
 import fs from "node:fs";
 import path from "node:path";
 import handlebars from "handlebars";
+import { validateCode } from "../utils/googleOAuth2.js";
 
 const RESET_PASSWORD_TEMPLATE = fs.readFileSync(
   path.resolve("src/templates/resetPwd.hbs"),
@@ -153,4 +154,29 @@ export async function resetPassword(password, token) {
     }
     throw error;
   }
+}
+
+export async function loginOrSingupWithGoogle(code) {
+  const loginTicket = await validateCode(code);
+  const payload = loginTicket.getPayload();
+  if (!payload) throw createHttpError(401);
+
+  let user = await User.findOne({ email: payload.email });
+  if (!user) {
+    const password = await bcrypt.hash(randomBytes(10).toString("base64"), 10);
+
+    user = await User.create({
+      email: payload.email,
+      name: payload.name,
+      password,
+    });
+  }
+  await Session.deleteOne({ userId: user._id });
+
+  const newSession = createSession();
+
+  return await Session.create({
+    userId: user._id,
+    ...newSession,
+  });
 }

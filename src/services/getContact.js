@@ -1,4 +1,4 @@
-import Contact from "../models/Contact.js";
+import Contact from '../models/Contact.js';
 
 export const getAllContacts = async ({
   page,
@@ -13,14 +13,14 @@ export const getAllContacts = async ({
   const contactQuery = Contact.find();
 
   if (filter.type) {
-    contactQuery.where("contactType").equals(filter.type);
+    contactQuery.where('contactType').equals(filter.type);
   }
 
-  if (typeof filter.isFavourite === "boolean") {
-    contactQuery.where("isFavourite").equals(filter.isFavourite);
+  if (typeof filter.isFavourite === 'boolean') {
+    contactQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-  contactQuery.where("userId").equals(userId);
+  contactQuery.where('userId').equals(userId);
 
   const [total, contacts] = await Promise.all([
     Contact.countDocuments(contactQuery),
